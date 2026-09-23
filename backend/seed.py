@@ -23,7 +23,7 @@ RECIPES = [
     {
         "title": "Оливье",
         "description": "Классический новогодний салат с колбасой и майонезом.",
-        "image_url": "https://images.unsplash.com/photo-1547592180-85f173990554?w=800",
+        "image_url": "https://i.pinimg.com/736x/98/a3/e0/98a3e0d6095c7ac80b9ad6bb9667ae28.jpg",
         "category": "Салат",
         "cooking_time": 30,
         "servings": 4,
@@ -44,7 +44,7 @@ RECIPES = [
     {
         "title": "Борщ",
         "description": "Наваристый украинский суп со свёклой и капустой.",
-        "image_url": "https://images.unsplash.com/photo-1543362906-acfc16c67564?w=800",
+        "image_url": "https://i.pinimg.com/1200x/35/08/4d/35084d820856d2801bd78ea3f3b62e2e.jpg",
         "category": "Суп",
         "cooking_time": 90,
         "servings": 6,
@@ -67,7 +67,7 @@ RECIPES = [
     {
         "title": "Сырники",
         "description": "Пышные творожные оладьи на завтрак.",
-        "image_url": "https://images.unsplash.com/photo-1587535958098-1b3f2a3e5f2a?w=800",
+        "image_url": "https://i.pinimg.com/1200x/8b/9e/89/8b9e89504843c92cd1d09c1e9f73fc04.jpg",
         "category": "Завтрак",
         "cooking_time": 25,
         "servings": 3,
