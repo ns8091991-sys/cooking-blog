@@ -14,13 +14,22 @@ router = APIRouter()
 
 @router.post("/register", response_model=UserRead, status_code=201)
 def register(payload: UserCreate, db: Session = Depends(get_db)):
-    if auth_service.get_user_by_email(db, payload.email):
+    try:
+        if auth_service.get_user_by_email(db, payload.email):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Пользователь с таким email уже существует",
+            )
+        return auth_service.create_user(db, payload)
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Пользователь с таким email уже существует",
+            status_code=500,
+            detail=f"Ошибка сервера: {type(e).__name__}: {str(e)}",
         )
-    return auth_service.create_user(db, payload)
-
 
 @router.post("/login", response_model=Token)
 def login(
