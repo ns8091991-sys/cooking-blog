@@ -1,6 +1,5 @@
 import sqlite3
 import os
-from datetime import datetime
 
 DB = os.path.join(os.path.dirname(__file__), "cooking.db")
 
@@ -13,10 +12,13 @@ try:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     def hash_password(p): return pwd_context.hash(p)
 except Exception:
-    # Если passlib не установлен — используем bcrypt напрямую
     import bcrypt
     def hash_password(p):
         return bcrypt.hashpw(p.encode()[:72], bcrypt.gensalt()).decode()
+
+
+# === Твоя ссылка на видео (используется у всех шагов) ===
+DEMO_VIDEO = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 
 
 RECIPES = [
@@ -28,10 +30,9 @@ RECIPES = [
         "cooking_time": 30,
         "servings": 4,
         "steps": [
-            ("Отварить овощи", "Картофель, морковь и яйца отварить до готовности, остудить."
-            "https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
-            ("Нарезать кубиками", "Всё нарезать мелкими кубиками, колбасу — тоже."),
-            ("Смешать", "Соединить, добавить горошек, посолить, заправить майонезом."),
+            ("Отварить овощи", "Картофель, морковь и яйца отварить до готовности, остудить.", DEMO_VIDEO),
+            ("Нарезать кубиками", "Всё нарезать мелкими кубиками, колбасу — тоже.", DEMO_VIDEO),
+            ("Смешать", "Соединить, добавить горошек, посолить, заправить майонезом.", DEMO_VIDEO),
         ],
         "ingredients": [
             ("Картофель", 300, "г", "овощи"),
@@ -50,10 +51,10 @@ RECIPES = [
         "cooking_time": 90,
         "servings": 6,
         "steps": [
-            ("Сварить бульон", "Мясо залить водой, варить 60 минут, снимая пену."),
-            ("Обжарить овощи", "Лук, морковь и свёклу обжарить на масле 10 минут."),
-            ("Добавить в бульон", "Картофель, капусту и зажарку — в бульон. Варить 20 минут."),
-            ("Дать настояться", "Выключить, накрыть крышкой, дать постоять 15 минут."),
+            ("Сварить бульон", "Мясо залить водой, варить 60 минут, снимая пену.", DEMO_VIDEO),
+            ("Обжарить овощи", "Лук, морковь и свёклу обжарить на масле 10 минут.", DEMO_VIDEO),
+            ("Добавить в бульон", "Картофель, капусту и зажарку — в бульон. Варить 20 минут.", DEMO_VIDEO),
+            ("Дать настояться", "Выключить, накрыть крышкой, дать постоять 15 минут.", DEMO_VIDEO),
         ],
         "ingredients": [
             ("Говядина", 500, "г", "мясо"),
@@ -73,9 +74,9 @@ RECIPES = [
         "cooking_time": 25,
         "servings": 3,
         "steps": [
-            ("Замесить тесто", "Творог, яйцо, муку и сахар смешать до однородности."),
-            ("Сформировать", "Мокрыми руками слепить шайбочки, обвалять в муке."),
-            ("Обжарить", "На среднем огне по 3 минуты с каждой стороны."),
+            ("Замесить тесто", "Творог, яйцо, муку и сахар смешать до однородности.", DEMO_VIDEO),
+            ("Сформировать", "Мокрыми руками слепить шайбочки, обвалять в муке.", DEMO_VIDEO),
+            ("Обжарить", "На среднем огне по 3 минуты с каждой стороны.", DEMO_VIDEO),
         ],
         "ingredients": [
             ("Творог", 400, "г", "молочное"),
@@ -93,10 +94,10 @@ RECIPES = [
         "cooking_time": 40,
         "servings": 2,
         "steps": [
-            ("Замесить тесто", "Мука, вода, дрожжи, соль — вымесить 10 минут."),
-            ("Дать подойти", "Накрыть, оставить на 30 минут в тепле."),
-            ("Собрать пиццу", "Раскатать, смазать соусом, выложить сыр и базилик."),
-            ("Запечь", "В разогретой до 250°C духовке 10–12 минут."),
+            ("Замесить тесто", "Мука, вода, дрожжи, соль — вымесить 10 минут.", DEMO_VIDEO),
+            ("Дать подойти", "Накрыть, оставить на 30 минут в тепле.", DEMO_VIDEO),
+            ("Собрать пиццу", "Раскатать, смазать соусом, выложить сыр и базилик.", DEMO_VIDEO),
+            ("Запечь", "В разогретой до 250°C духовке 10–12 минут.", DEMO_VIDEO),
         ],
         "ingredients": [
             ("Мука", 300, "г", "бакалея"),
@@ -115,10 +116,10 @@ RECIPES = [
         "cooking_time": 60,
         "servings": 6,
         "steps": [
-            ("Сварить кофе", "Крепкий эспрессо остудить."),
-            ("Взбить крем", "Желтки с сахаром взбить, добавить маскарпоне."),
-            ("Собрать", "Печенье обмакнуть в кофе, выложить слоями с кремом."),
-            ("Охладить", "В холодильник минимум на 4 часа."),
+            ("Сварить кофе", "Крепкий эспрессо остудить.", DEMO_VIDEO),
+            ("Взбить крем", "Желтки с сахаром взбить, добавить маскарпоне.", DEMO_VIDEO),
+            ("Собрать", "Печенье обмакнуть в кофе, выложить слоями с кремом.", DEMO_VIDEO),
+            ("Охладить", "В холодильник минимум на 4 часа.", DEMO_VIDEO),
         ],
         "ingredients": [
             ("Печенье савоярди", 200, "г", "бакалея"),
@@ -137,9 +138,9 @@ RECIPES = [
         "cooking_time": 10,
         "servings": 4,
         "steps": [
-            ("Выжать сок", "Из лимонов выжать сок в кувшин."),
-            ("Добавить воду", "Залить холодной водой, добавить сахар по вкусу."),
-            ("Украсить", "Положить лёд и веточки мяты."),
+            ("Выжать сок", "Из лимонов выжать сок в кувшин.", DEMO_VIDEO),
+            ("Добавить воду", "Залить холодной водой, добавить сахар по вкусу.", DEMO_VIDEO),
+            ("Украсить", "Положить лёд и веточки мяты.", DEMO_VIDEO),
         ],
         "ingredients": [
             ("Лимоны", 3, "шт", "фрукты"),
@@ -170,7 +171,7 @@ def main():
 
     conn = sqlite3.connect(DB)
     cur = conn.cursor()
-    
+
     cur.execute("SELECT id FROM users WHERE email = ?", (TEST_EMAIL,))
     row = cur.fetchone()
 
@@ -183,9 +184,8 @@ def main():
             (TEST_EMAIL, hash_password(TEST_PASSWORD), TEST_NAME),
         )
         user_id = cur.lastrowid
-        print(f" Создан пользователь: {TEST_EMAIL} / {TEST_PASSWORD} (id={user_id})")
+        print(f"Создан пользователь: {TEST_EMAIL} / {TEST_PASSWORD} (id={user_id})")
 
-    
     cur.execute("DELETE FROM recipe_ingredients")
     cur.execute("DELETE FROM steps")
     cur.execute("DELETE FROM recipes")
@@ -202,13 +202,14 @@ def main():
         recipe_id = cur.lastrowid
 
         for i, step_data in enumerate(r["steps"], start=1):
-             title = step_data[0]
-             desc = step_data[1]
-             video_url = step_data[2] if len(step_data) > 2 else None
-             cur.execute(
-            "INSERT INTO steps (recipe_id, \"order\", title, description, video_url) VALUES (?, ?, ?, ?, ?)",
+            title = step_data[0]
+            desc = step_data[1]
+            video_url = step_data[2] if len(step_data) > 2 else None
+            cur.execute(
+                """INSERT INTO steps (recipe_id, "order", title, description, video_url)
+                   VALUES (?, ?, ?, ?, ?)""",
                 (recipe_id, i, title, desc, video_url),
-                    )
+            )
 
         for name, amount, unit, category in r["ingredients"]:
             ing_id = get_or_create_ingredient(cur, name, unit, category)
