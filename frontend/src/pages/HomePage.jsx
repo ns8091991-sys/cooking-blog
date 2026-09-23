@@ -4,42 +4,42 @@ export default function HomePage() {
   return (
     <div>
       <section className="hero">
-  <div className="hero__row">
+        <div className="hero__row">
 
-    {/* Текстовая колонка */}
-    <div className="hero__text">
-      <span className="eyebrow">Журнал о еде · 2026</span>
+          {/* Текстовая колонка */}
+          <div className="hero__text">
+            <span className="eyebrow">Журнал о еде · 2026</span>
 
-      <h1 className="hero__title">
-        Готовим<br />
-        <em className="italic text-bordeaux">вместе</em>
-        <span className="text-bordeaux">.</span>
-      </h1>
+            <h1 className="hero__title">
+              Готовим<br />
+              <em className="italic text-bordeaux">вместе</em>
+              <span className="text-bordeaux">.</span>
+            </h1>
 
-      <p className="hero__desc">
-        Интерактивные рецепты, пошаговые видеоуроки
-        и умный список покупок — всё в одном месте.
-      </p>
+            <p className="hero__desc">
+              Интерактивные рецепты, пошаговые видеоуроки
+              и умный список покупок — всё в одном месте.
+            </p>
 
-      <div className="hero__actions">
-        <Link to="/recipes" className="btn btn--dark">
-          Смотреть рецепты
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
-        </Link>
-        <Link to="/register" className="btn btn--outline">
-          Присоединиться
-        </Link>
-      </div>
-    </div>
-    <div className="hero__media">
-      <img src="photo.jpg" alt="" />
-    </div>
+            <div className="hero__actions">
+              <Link to="/recipes" className="btn btn--dark">
+                Смотреть рецепты
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </Link>
+              <Link to="/register" className="btn btn--outline">
+                Присоединиться
+              </Link>
+            </div>
+          </div>
+          <div className="hero__media">
+            <img src="photo.jg" alt="" />
+          </div>
 
-  </div>
-</section>
+        </div>
+      </section>
 
       {/* MARQUEE */}
       <section className="marquee-band">
