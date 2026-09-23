@@ -16,6 +16,12 @@ except Exception:
     def hash_password(p):
         return bcrypt.hashpw(p.encode()[:72], bcrypt.gensalt()).decode()
 
+VIDEO_OLIVIER  = None   
+VIDEO_BORSH    = "https://video-preview.s3.yandex.net/m9u0TQIAAAA.mp4"
+VIDEO_SYRNIKI  = "https://video-preview.s3.yandex.net/KFzoMgIAAAA.mp4"
+VIDEO_PIZZA    = "https://video-preview.s3.yandex.net/IOReXwIAAAA.mp4"
+VIDEO_TIRAMISU = "https://video-preview.s3.yandex.net/rZ7RYAIAAAA.mp4"
+VIDEO_LIMONAD  = None   
 
 RECIPES = [
     {
@@ -25,6 +31,7 @@ RECIPES = [
         "category": "Салат",
         "cooking_time": 30,
         "servings": 4,
+        "video": VIDEO_OLIVIER,
         "steps": [
             ("Отварить овощи", "Картофель, морковь и яйца отварить до готовности, остудить."),
             ("Нарезать кубиками", "Всё нарезать мелкими кубиками, колбасу — тоже."),
@@ -46,12 +53,12 @@ RECIPES = [
         "category": "Суп",
         "cooking_time": 90,
         "servings": 6,
+        "video": VIDEO_BORSH,
         "steps": [
             ("Сварить бульон", "Мясо залить водой, варить 60 минут, снимая пену."),
             ("Обжарить овощи", "Лук, морковь и свёклу обжарить на масле 10 минут."),
             ("Добавить в бульон", "Картофель, капусту и зажарку — в бульон. Варить 20 минут."),
             ("Дать настояться", "Выключить, накрыть крышкой, дать постоять 15 минут."),
-            "https://video-preview.s3.yandex.net/m9u0TQIAAAA.mp4",
         ],
         "ingredients": [
             ("Говядина", 500, "г", "мясо"),
@@ -70,11 +77,11 @@ RECIPES = [
         "category": "Завтрак",
         "cooking_time": 25,
         "servings": 3,
+        "video": VIDEO_SYRNIKI,
         "steps": [
             ("Замесить тесто", "Творог, яйцо, муку и сахар смешать до однородности."),
             ("Сформировать", "Мокрыми руками слепить шайбочки, обвалять в муке."),
             ("Обжарить", "На среднем огне по 3 минуты с каждой стороны."),
-            "https://video-preview.s3.yandex.net/KFzoMgIAAAA.mp4",
         ],
         "ingredients": [
             ("Творог", 400, "г", "молочное"),
@@ -91,12 +98,12 @@ RECIPES = [
         "category": "Основное",
         "cooking_time": 40,
         "servings": 2,
+        "video": VIDEO_PIZZA,
         "steps": [
             ("Замесить тесто", "Мука, вода, дрожжи, соль — вымесить 10 минут."),
             ("Дать подойти", "Накрыть, оставить на 30 минут в тепле."),
             ("Собрать пиццу", "Раскатать, смазать соусом, выложить сыр и базилик."),
             ("Запечь", "В разогретой до 250°C духовке 10–12 минут."),
-            "https://video-preview.s3.yandex.net/IOReXwIAAAA.mp4",
         ],
         "ingredients": [
             ("Мука", 300, "г", "бакалея"),
@@ -114,12 +121,12 @@ RECIPES = [
         "category": "Десерт",
         "cooking_time": 60,
         "servings": 6,
+        "video": VIDEO_TIRAMISU,
         "steps": [
             ("Сварить кофе", "Крепкий эспрессо остудить."),
             ("Взбить крем", "Желтки с сахаром взбить, добавить маскарпоне."),
             ("Собрать", "Печенье обмакнуть в кофе, выложить слоями с кремом."),
-            ("Охладить", "В холодильник минимум на 4 часа.",),
-            "https://video-preview.s3.yandex.net/rZ7RYAIAAAA.mp4",
+            ("Охладить", "В холодильник минимум на 4 часа."),
         ],
         "ingredients": [
             ("Печенье савоярди", 200, "г", "бакалея"),
@@ -137,6 +144,7 @@ RECIPES = [
         "category": "Напиток",
         "cooking_time": 10,
         "servings": 4,
+        "video": VIDEO_LIMONAD,
         "steps": [
             ("Выжать сок", "Из лимонов выжать сок в кувшин."),
             ("Добавить воду", "Залить холодной водой, добавить сахар по вкусу."),
@@ -201,10 +209,9 @@ def main():
         )
         recipe_id = cur.lastrowid
 
-        for i, step_data in enumerate(r["steps"], start=1):
-            title = step_data[0]
-            desc = step_data[1]
-            video_url = step_data[2] if len(step_data) > 2 else None
+        video_url = r.get("video")
+
+        for i, (title, desc) in enumerate(r["steps"], start=1):
             cur.execute(
                 """INSERT INTO steps (recipe_id, "order", title, description, video_url)
                    VALUES (?, ?, ?, ?, ?)""",
