@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { recipesApi } from '../api/recipes';
 import { ingredientsApi } from '../api/ingredients';
 import { useAuth } from '../context/AuthContext';
+import StepTimer from '../components/StepTimer';
 
 export default function RecipeDetailPage() {
   const { id } = useParams();
@@ -16,23 +17,17 @@ export default function RecipeDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Формы
   const [showStepForm, setShowStepForm] = useState(false);
   const [showIngForm, setShowIngForm] = useState(false);
 
-  const [stepForm, setStepForm] = useState({
-    title: '', description: '', duration: '', video_url: '',
-  });
-  const [ingForm, setIngForm] = useState({
-    name: '', amount: '', unit: 'г', category: 'разное',
-  });
+  const [stepForm, setStepForm] = useState({ title: '', description: '', duration: '', video_url: '' });
+  const [ingForm, setIngForm] = useState({ name: '', amount: '', unit: 'г', category: 'разное' });
 
   const [stepError, setStepError] = useState(null);
   const [ingError, setIngError] = useState(null);
   const [stepSaving, setStepSaving] = useState(false);
   const [ingSaving, setIngSaving] = useState(false);
 
-  // Загрузка
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -52,7 +47,6 @@ export default function RecipeDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // Список всех ингредиентов — когда открываем форму
   useEffect(() => {
     if (showIngForm) {
       ingredientsApi.listAll().then(setAllIngredients).catch(() => { });
@@ -61,19 +55,15 @@ export default function RecipeDetailPage() {
 
   const isOwner = user && recipe && recipe.author_id === user.id;
 
-  // --- Шаги ---
-  const handleStepChange = (e) =>
-    setStepForm({ ...stepForm, [e.target.name]: e.target.value });
+  const handleStepChange = (e) => setStepForm({ ...stepForm, [e.target.name]: e.target.value });
 
   const submitStep = async (e) => {
     e.preventDefault();
     setStepError(null);
-
     if (!stepForm.title.trim()) {
       setStepError('Введите название шага');
       return;
     }
-
     setStepSaving(true);
     try {
       const payload = {
@@ -95,37 +85,22 @@ export default function RecipeDetailPage() {
     }
   };
 
-  // --- Ингредиенты ---
-  const handleIngChange = (e) =>
-    setIngForm({ ...ingForm, [e.target.name]: e.target.value });
+  const handleIngChange = (e) => setIngForm({ ...ingForm, [e.target.name]: e.target.value });
 
   const submitIngredient = async (e) => {
     e.preventDefault();
     setIngError(null);
-
-    if (!ingForm.name.trim()) {
-      setIngError('Введите название ингредиента');
-      return;
-    }
-    if (!ingForm.amount || Number(ingForm.amount) <= 0) {
-      setIngError('Укажите количество');
-      return;
-    }
+    if (!ingForm.name.trim()) { setIngError('Введите название'); return; }
+    if (!ingForm.amount || Number(ingForm.amount) <= 0) { setIngError('Укажите количество'); return; }
 
     setIngSaving(true);
     try {
       const trimmedName = ingForm.name.trim();
-
-      const existing = allIngredients.find(
-        (i) => i.name.toLowerCase() === trimmedName.toLowerCase()
-      );
+      const existing = allIngredients.find((i) => i.name.toLowerCase() === trimmedName.toLowerCase());
 
       let ingredientId;
-      let ingredientObj;
-
       if (existing) {
         ingredientId = existing.id;
-        ingredientObj = existing;
       } else {
         const created = await ingredientsApi.create({
           name: trimmedName,
@@ -133,7 +108,6 @@ export default function RecipeDetailPage() {
           category: ingForm.category || null,
         });
         ingredientId = created.id;
-        ingredientObj = created;
       }
 
       const added = await recipesApi.addIngredient(id, {
@@ -152,40 +126,17 @@ export default function RecipeDetailPage() {
     }
   };
 
-  {
-    isOwner && (
-      <div className="recipe-head__actions">
-        <Link to={`/recipes/${id}/edit`} className="btn btn--outline">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-          </svg>
-          Редактировать
-        </Link>
-        <button onClick={handleDelete} className="btn btn--outline">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
-            <polyline points="3 6 5 6 21 6" />
-            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-          </svg>
-          Удалить
-        </button>
-      </div>
-    )
-  }
-
   const handleDelete = async () => {
-    if (!confirm('Удалить рецепт? Это действие нельзя отменить.')) return;
+    if (!confirm('Удалить рецепт?')) return;
     try {
       await recipesApi.remove(id);
       navigate('/recipes');
     } catch {
-      alert('Не удалось удалить рецепт');
+      alert('Не удалось удалить');
     }
   };
 
-  if (loading) {
-    return <div className="page"><div className="state">Загрузка рецепта…</div></div>;
-  }
+  if (loading) return <div className="page"><div className="state">Загрузка рецепта…</div></div>;
 
   if (error) {
     return (
@@ -233,13 +184,22 @@ export default function RecipeDetailPage() {
         <h1 className="recipe-head__title">{recipe.title}</h1>
         {recipe.description && <p className="recipe-head__desc">{recipe.description}</p>}
 
+        {recipe.image_url && (
+          <div className="recipe-head__image">
+            <img src={recipe.image_url} alt={recipe.title} />
+          </div>
+        )}
+
         {isOwner && (
           <div className="recipe-head__actions">
-            <button onClick={handleDelete} className="btn btn--outline">
+            <Link to={`/recipes/${id}/edit`} className="btn btn--outline">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
-                <polyline points="3 6 5 6 21 6" />
-                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
               </svg>
+              Редактировать
+            </Link>
+            <button onClick={handleDelete} className="btn btn--outline">
               Удалить
             </button>
           </div>
@@ -251,9 +211,7 @@ export default function RecipeDetailPage() {
         <aside className="recipe-sidebar">
           <div className="recipe-sidebar__head">
             <h2 className="recipe-sidebar__title">Ингредиенты</h2>
-            {ingredients.length > 0 && (
-              <span className="recipe-sidebar__count">{ingredients.length}</span>
-            )}
+            {ingredients.length > 0 && <span className="recipe-sidebar__count">{ingredients.length}</span>}
           </div>
 
           {ingredients.length === 0 && !showIngForm ? (
@@ -263,117 +221,55 @@ export default function RecipeDetailPage() {
               {ingredients.map((ing) => (
                 <li key={ing.id} className="ingredients__item">
                   <span className="ingredients__name">{ing.name}</span>
-                  <span className="ingredients__amount">
-                    {ing.amount} {ing.unit || ''}
-                  </span>
+                  <span className="ingredients__amount">{ing.amount} {ing.unit || ''}</span>
                 </li>
               ))}
             </ul>
           )}
 
-          {/* Форма добавления ингредиента */}
           {isOwner && showIngForm && (
             <form onSubmit={submitIngredient} className="inline-form">
               {ingError && <div className="inline-form__error">{ingError}</div>}
-
               <div className="field">
                 <label className="field-label">Ингредиент</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={ingForm.name}
-                  onChange={handleIngChange}
-                  list="ingredient-suggestions"
-                  placeholder="Начните вводить…"
-                  className="input"
-                  autoFocus
-                />
+                <input type="text" name="name" value={ingForm.name} onChange={handleIngChange} list="ingredient-suggestions" placeholder="Начните вводить…" className="input" autoFocus />
                 <datalist id="ingredient-suggestions">
-                  {allIngredients.map((i) => (
-                    <option key={i.id} value={i.name} />
-                  ))}
+                  {allIngredients.map((i) => <option key={i.id} value={i.name} />)}
                 </datalist>
-                <p className="field-hint">Выберите из списка или создайте новый</p>
               </div>
-
               <div className="inline-form__row">
                 <div className="field">
                   <label className="field-label">Кол-во</label>
-                  <input
-                    type="number"
-                    name="amount"
-                    value={ingForm.amount}
-                    onChange={handleIngChange}
-                    placeholder="200"
-                    min="0.1"
-                    step="any"
-                    className="input"
-                  />
+                  <input type="number" name="amount" value={ingForm.amount} onChange={handleIngChange} placeholder="200" min="0.1" step="any" className="input" />
                 </div>
                 <div className="field">
                   <label className="field-label">Ед.</label>
-                  <input
-                    type="text"
-                    name="unit"
-                    value={ingForm.unit}
-                    onChange={handleIngChange}
-                    placeholder="г"
-                    maxLength={10}
-                    className="input"
-                  />
+                  <input type="text" name="unit" value={ingForm.unit} onChange={handleIngChange} placeholder="г" maxLength={10} className="input" />
                 </div>
               </div>
-
               <div className="inline-form__actions">
-                <button
-                  type="button"
-                  onClick={() => { setShowIngForm(false); setIngError(null); }}
-                  className="btn btn--outline btn--sm"
-                >
-                  Отмена
-                </button>
-                <button type="submit" disabled={ingSaving} className="btn btn--red btn--sm">
-                  {ingSaving ? '…' : 'Добавить'}
-                </button>
+                <button type="button" onClick={() => { setShowIngForm(false); setIngError(null); }} className="btn btn--outline btn--sm">Отмена</button>
+                <button type="submit" disabled={ingSaving} className="btn btn--red btn--sm">{ingSaving ? '…' : 'Добавить'}</button>
               </div>
             </form>
           )}
 
           {isOwner && !showIngForm && (
-            <button
-              onClick={() => setShowIngForm(true)}
-              className="btn btn--outline btn--full"
-              style={{ marginTop: ingredients.length ? 16 : 0 }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" width="14" height="14">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-              Добавить ингредиент
+            <button onClick={() => setShowIngForm(true)} className="btn btn--outline btn--full" style={{ marginTop: ingredients.length ? 16 : 0 }}>
+              + Добавить ингредиент
             </button>
           )}
 
-          <Link
-            to="/shopping-list"
-            className="btn btn--red btn--full"
-            style={{ marginTop: 16 }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
-              <circle cx="9" cy="21" r="1" />
-              <circle cx="20" cy="21" r="1" />
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-            </svg>
+          <Link to="/shopping-list" className="btn btn--red btn--full" style={{ marginTop: 16 }}>
             В список покупок
           </Link>
         </aside>
 
-        {/* Шаги */}
         <main className="recipe-main">
           <div className="recipe-main__head">
             <h2 className="recipe-main__title">
               Приготовление
-              {steps.length > 0 && (
-                <span className="recipe-main__count">{steps.length} шагов</span>
-              )}
+              {steps.length > 0 && <span className="recipe-main__count">{steps.length} шагов</span>}
             </h2>
           </div>
 
@@ -389,15 +285,7 @@ export default function RecipeDetailPage() {
                   <div className="step__body">
                     {step.title && <h3 className="step__title">{step.title}</h3>}
                     {step.description && <p className="step__text">{step.description}</p>}
-                    {step.duration && (
-                      <span className="step__duration">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width="12" height="12">
-                          <circle cx="12" cy="12" r="10" />
-                          <polyline points="12 6 12 12 16 14" />
-                        </svg>
-                        {step.duration} сек
-                      </span>
-                    )}
+                    {step.duration ? <StepTimer seconds={step.duration} /> : null}
                   </div>
                 </li>
               ))}
@@ -407,83 +295,34 @@ export default function RecipeDetailPage() {
           {isOwner && showStepForm && (
             <form onSubmit={submitStep} className="inline-form" style={{ marginTop: 24 }}>
               {stepError && <div className="inline-form__error">{stepError}</div>}
-
               <div className="field">
                 <label className="field-label">Название шага</label>
-                <input
-                  type="text"
-                  name="title"
-                  value={stepForm.title}
-                  onChange={handleStepChange}
-                  placeholder="Например, Нарезать лук"
-                  className="input"
-                  autoFocus
-                />
+                <input type="text" name="title" value={stepForm.title} onChange={handleStepChange} placeholder="Нарезать лук" className="input" autoFocus />
               </div>
-
               <div className="field">
                 <label className="field-label">Описание</label>
-                <textarea
-                  name="description"
-                  value={stepForm.description}
-                  onChange={handleStepChange}
-                  placeholder="Что делать на этом шаге"
-                  className="input textarea"
-                  rows={3}
-                />
+                <textarea name="description" value={stepForm.description} onChange={handleStepChange} placeholder="Что делать" className="input textarea" rows={3} />
               </div>
-
               <div className="inline-form__row">
                 <div className="field">
                   <label className="field-label">Длительность, сек</label>
-                  <input
-                    type="number"
-                    name="duration"
-                    value={stepForm.duration}
-                    onChange={handleStepChange}
-                    placeholder="120"
-                    min="1"
-                    className="input"
-                  />
+                  <input type="number" name="duration" value={stepForm.duration} onChange={handleStepChange} placeholder="120" min="1" className="input" />
                 </div>
                 <div className="field">
                   <label className="field-label">Видео URL</label>
-                  <input
-                    type="url"
-                    name="video_url"
-                    value={stepForm.video_url}
-                    onChange={handleStepChange}
-                    placeholder="https://…"
-                    className="input"
-                  />
+                  <input type="url" name="video_url" value={stepForm.video_url} onChange={handleStepChange} placeholder="https://…" className="input" />
                 </div>
               </div>
-
               <div className="inline-form__actions">
-                <button
-                  type="button"
-                  onClick={() => { setShowStepForm(false); setStepError(null); }}
-                  className="btn btn--outline btn--sm"
-                >
-                  Отмена
-                </button>
-                <button type="submit" disabled={stepSaving} className="btn btn--red btn--sm">
-                  {stepSaving ? '…' : 'Добавить шаг'}
-                </button>
+                <button type="button" onClick={() => { setShowStepForm(false); setStepError(null); }} className="btn btn--outline btn--sm">Отмена</button>
+                <button type="submit" disabled={stepSaving} className="btn btn--red btn--sm">{stepSaving ? '…' : 'Добавить шаг'}</button>
               </div>
             </form>
           )}
 
           {isOwner && !showStepForm && (
-            <button
-              onClick={() => setShowStepForm(true)}
-              className="btn btn--outline btn--full"
-              style={{ marginTop: 24 }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" width="14" height="14">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-              Добавить шаг
+            <button onClick={() => setShowStepForm(true)} className="btn btn--outline btn--full" style={{ marginTop: 24 }}>
+              + Добавить шаг
             </button>
           )}
         </main>

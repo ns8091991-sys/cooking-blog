@@ -5,15 +5,22 @@ export default function NotFoundPage() {
         <div className="page">
             <div className="not-found">
                 <span className="not-found__num">404</span>
+
                 <h1 className="not-found__title">
                     Страница не найдена
                 </h1>
+
                 <p className="not-found__text">
-                    Возможно, рецепт удалили или ссылка устарела.
+                    Возможно, рецепт удалили, ссылка устарела или вы ошиблись в адресе.
                 </p>
+
                 <div className="not-found__actions">
-                    <Link to="/" className="btn btn--outline">На главную</Link>
-                    <Link to="/recipes" className="btn btn--red">К рецептам</Link>
+                    <Link to="/" className="btn btn--outline">
+                        На главную
+                    </Link>
+                    <Link to="/recipes" className="btn btn--red">
+                        К рецептам
+                    </Link>
                 </div>
             </div>
         </div>

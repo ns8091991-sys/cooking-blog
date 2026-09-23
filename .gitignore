@@ -6,6 +6,7 @@ backend/.venv/
 backend/cooking.db
 backend/*.db
 backend/.env
+backend/.env.example
 
 # Node
 frontend/node_modules/
