@@ -2,11 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
-from app import models  
+from app import models  # noqa
 
 Base.metadata.create_all(bind=engine)
 
-from app import models  # noqa
 from app.routers import auth, recipes, steps, ingredients, shopping
 
 app = FastAPI(title="Cooking Blog API", version="0.1.0")
