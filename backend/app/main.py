@@ -26,13 +26,33 @@ app.include_router(shopping.router, prefix="/api/shopping-list", tags=["shopping
 def health():
     return {"status": "ok"}
 
-
 @app.on_event("startup")
 def on_startup():
     from sqlalchemy import inspect
     Base.metadata.create_all(bind=engine)
+
+    try:
+        from app.database import SessionLocal
+        from app.models.recipe import Recipe
+        db = SessionLocal()
+        count = db.query(Recipe).count()
+        db.close()
+
+        if count == 0:
+            print("SEED: база пуста, наполняем...")
+            import subprocess
+            import os
+            # путь к seed.py — относительно корня backend
+            seed_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "seed.py")
+            subprocess.run(["python", seed_path], check=False)
+            print("SEED: выполнено")
+        else:
+            print(f"SEED: пропускаем, в базе уже {count} рецептов")
+    except Exception as e:
+        print(f"SEED ERROR: {e}")
+
     inspector = inspect(engine)
-    print("TABLES AFTER CREATE_ALL:", inspector.get_table_names())
+    print("TABLES:", inspector.get_table_names())
 
 
 @app.get("/debug/tables")
