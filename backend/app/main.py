@@ -1,6 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.database import Base, engine
+from app import models  
+
+Base.metadata.create_all(bind=engine)
+
 from app import models  # noqa
 from app.routers import auth, recipes, steps, ingredients, shopping
 
@@ -8,8 +13,12 @@ app = FastAPI(title="Cooking Blog API", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:4173",
+        "*",  
+    ],
+    allow_credentials=False,  
     allow_methods=["*"],
     allow_headers=["*"],
 )
