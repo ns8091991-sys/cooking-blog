@@ -28,7 +28,8 @@ RECIPES = [
         "cooking_time": 30,
         "servings": 4,
         "steps": [
-            ("Отварить овощи", "Картофель, морковь и яйца отварить до готовности, остудить."),
+            ("Отварить овощи", "Картофель, морковь и яйца отварить до готовности, остудить."
+            "https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
             ("Нарезать кубиками", "Всё нарезать мелкими кубиками, колбасу — тоже."),
             ("Смешать", "Соединить, добавить горошек, посолить, заправить майонезом."),
         ],
@@ -200,11 +201,14 @@ def main():
         )
         recipe_id = cur.lastrowid
 
-        for i, (title, desc) in enumerate(r["steps"], start=1):
-            cur.execute(
-                "INSERT INTO steps (recipe_id, \"order\", title, description) VALUES (?, ?, ?, ?)",
-                (recipe_id, i, title, desc),
-            )
+        for i, step_data in enumerate(r["steps"], start=1):
+             title = step_data[0]
+             desc = step_data[1]
+             video_url = step_data[2] if len(step_data) > 2 else None
+             cur.execute(
+            "INSERT INTO steps (recipe_id, \"order\", title, description, video_url) VALUES (?, ?, ?, ?, ?)",
+                (recipe_id, i, title, desc, video_url),
+                    )
 
         for name, amount, unit, category in r["ingredients"]:
             ing_id = get_or_create_ingredient(cur, name, unit, category)

@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { recipesApi } from '../api/recipes';
 import { ingredientsApi } from '../api/ingredients';
 import { useAuth } from '../context/AuthContext';
-import StepTimer from '../components/StepTimer';
+import StepVideo from '../components/StepVideo';
 
 export default function RecipeDetailPage() {
   const { id } = useParams();
@@ -285,7 +285,7 @@ export default function RecipeDetailPage() {
                   <div className="step__body">
                     {step.title && <h3 className="step__title">{step.title}</h3>}
                     {step.description && <p className="step__text">{step.description}</p>}
-                    {step.duration ? <StepTimer seconds={step.duration} /> : null}
+                    {step.video_url && <StepVideo url={step.video_url} title={step.title} />}
                   </div>
                 </li>
               ))}
