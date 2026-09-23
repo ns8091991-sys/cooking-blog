@@ -120,3 +120,25 @@ Email: test@test.com
 ```bash
 git clone https://github.com/ns8091991-sys/cooking-blog.git
 cd cooking-blog
+
+## Скриншоты
+
+### Главная страница
+
+![Главная](docs/screenshots/home.png)
+
+### Каталог рецептов
+
+![Каталог](docs/screenshots/recipe.png)
+
+### Детальная страница рецепта
+
+![Рецепт](docs/screenshots/recipe(2).png)
+
+### Умный список покупок
+
+![Список покупок](docs/screenshots/shopping-list.png)
+
+### Профиль
+
+![Профиль](docs/screenshots/profile.png)
