@@ -35,7 +35,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="hero__media">
-            <img src="/photho.jpg" alt="..." />
+            <img src="/photho.jpg" alt="" />
           </div>
 
         </div>
