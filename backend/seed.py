@@ -16,12 +16,12 @@ except Exception:
     def hash_password(p):
         return bcrypt.hashpw(p.encode()[:72], bcrypt.gensalt()).decode()
 
-VIDEO_OLIVIER  = None   
+VIDEO_OLIVIER  = None
 VIDEO_BORSH    = "https://video-preview.s3.yandex.net/m9u0TQIAAAA.mp4"
 VIDEO_SYRNIKI  = "https://video-preview.s3.yandex.net/KFzoMgIAAAA.mp4"
 VIDEO_PIZZA    = "https://video-preview.s3.yandex.net/IOReXwIAAAA.mp4"
 VIDEO_TIRAMISU = "https://video-preview.s3.yandex.net/rZ7RYAIAAAA.mp4"
-VIDEO_LIMONAD  = None   
+VIDEO_LIMONAD  = None
 
 RECIPES = [
     {
@@ -117,7 +117,7 @@ RECIPES = [
     {
         "title": "Тирамису",
         "description": "Нежный итальянский десерт с кофе и маскарпоне.",
-        "image_url": "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800",
+        "image_url": "https://i.pinimg.com/1200x/73/8a/8d/738a8d67163bfd1c19c1dd5357f8fce7.jpg",
         "category": "Десерт",
         "cooking_time": 60,
         "servings": 6,
@@ -140,7 +140,7 @@ RECIPES = [
     {
         "title": "Лимонад",
         "description": "Освежающий домашний напиток с мятой.",
-        "image_url": "https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=800",
+        "image_url": "https://i.pinimg.com/1200x/6e/bd/a7/6ebda73fd484b2448dc940d0ccd4cb79.jpg",
         "category": "Напиток",
         "cooking_time": 10,
         "servings": 4,
