@@ -4,6 +4,7 @@ from app.models.step import Step
 from app.models.ingredient import Ingredient
 from app.models.recipe_ingredient import RecipeIngredient
 from app.models.shopping_list import ShoppingList, ShoppingItem
+from app.models.favorite import Favorite
 
 __all__ = [
     "User",
@@ -13,4 +14,5 @@ __all__ = [
     "RecipeIngredient",
     "ShoppingList",
     "ShoppingItem",
+    "Favorite",
 ]

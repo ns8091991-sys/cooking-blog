@@ -14,7 +14,7 @@ from app.config import settings
 from app.database import Base
 # Импортируйте сюда ВСЕ модели, чтобы Alembic их увидел
 from app.models import (  # noqa
-    user, recipe, step, ingredient, recipe_ingredient, shopping_list,
+    user, recipe, step, ingredient, recipe_ingredient, shopping_list, favorite,
 )
 
 config = context.config

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { recipesApi } from '../api/recipes';
+import { favoritesApi } from '../api/favorites';
 import { useAuth } from '../context/AuthContext';
 
 export default function ProfilePage() {
     const { user, loading: authLoading } = useAuth();
 
     const [myRecipes, setMyRecipes] = useState([]);
+    const [favorites, setFavorites] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -23,7 +25,11 @@ export default function ProfilePage() {
             })
             .catch((e) => setError(e.message))
             .finally(() => setLoading(false));
-    }, [user]);
+        favoritesApi.list()
+            .then(setFavorites)
+            .catch(() => { });
+    },
+        [user]);
 
     const handleDelete = async (id) => {
         if (!confirm('Удалить рецепт? Это действие нельзя отменить.')) return;
@@ -184,6 +190,56 @@ export default function ProfilePage() {
                                             <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
                                         </svg>
                                     </button>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </section>
+            <section className="profile-section">
+                <div className="profile-section__head">
+                    <h2 className="profile-section__title">
+                        <em className="italic text-bordeaux">Избранное</em>
+                    </h2>
+                    {favorites.length > 0 && (
+                        <span className="profile-section__count">{favorites.length}</span>
+                    )}
+                </div>
+
+                {favorites.length === 0 ? (
+                    <div className="empty empty--compact">
+                        <p className="empty__text">
+                            Пока ничего нет. Нажмите ❤️ на карточке рецепта.
+                        </p>
+                    </div>
+                ) : (
+                    <ul className="profile-recipes">
+                        {favorites.map((r) => (
+                            <li key={r.id} className="profile-recipe">
+                                <div className="profile-recipe__media">
+                                    {r.image_url ? (
+                                        <img src={r.image_url} alt={r.title} />
+                                    ) : (
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="rgba(116,7,13,0.6)" strokeWidth="1.3" width="28" height="28">
+                                            <path d="M3 11h18v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9z" />
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                        </svg>
+                                    )}
+                                </div>
+
+                                <div className="profile-recipe__body">
+                                    {r.category && <span className="profile-recipe__cat">{r.category}</span>}
+                                    <h3 className="profile-recipe__title">{r.title}</h3>
+                                    <div className="profile-recipe__meta">
+                                        {r.cooking_time && <span>{r.cooking_time} мин</span>}
+                                        {r.servings && <span>{r.servings} порц.</span>}
+                                    </div>
+                                </div>
+
+                                <div className="profile-recipe__actions">
+                                    <Link to={`/recipes/${r.id}`} className="btn btn--outline btn--sm">
+                                        Открыть
+                                    </Link>
                                 </div>
                             </li>
                         ))}

@@ -44,3 +44,9 @@ test_cooking.db
 backend/test_cooking.db
 backend/.coverage
 backend/htmlcov/
+
+**/__pycache__/
+*.pyc
+*.pyo
+test_cooking.db
+backend/test_cooking.db
