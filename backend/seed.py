@@ -94,7 +94,7 @@ RECIPES = [
     {
         "title": "Пицца Маргарита",
         "description": "Тонкая итальянская пицца с томатами и моцареллой.",
-        "image_url": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800",
+        "image_url": "https://i.pinimg.com/736x/13/33/f3/1333f34f52ed00472c5e3d62bae3c5c1.jpg",
         "category": "Основное",
         "cooking_time": 40,
         "servings": 2,
