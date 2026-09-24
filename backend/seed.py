@@ -17,10 +17,10 @@ except Exception:
         return bcrypt.hashpw(p.encode()[:72], bcrypt.gensalt()).decode()
 
 VIDEO_OLIVIER  = None
-VIDEO_BORSH    = "https://video-preview.s3.yandex.net/m9u0TQIAAAA.mp4"
-VIDEO_SYRNIKI  = "https://video-preview.s3.yandex.net/KFzoMgIAAAA.mp4"
-VIDEO_PIZZA    = "https://video-preview.s3.yandex.net/IOReXwIAAAA.mp4"
-VIDEO_TIRAMISU = "https://video-preview.s3.yandex.net/rZ7RYAIAAAA.mp4"
+VIDEO_BORSH    = "https://video-preview.s3.yandex.net/AdfCYAIAAAA.mp4"
+VIDEO_SYRNIKI  = "https://video-preview.s3.yandex.net/e6IHzAAAAAA.mp4"
+VIDEO_PIZZA    = "https://video-preview.s3.yandex.net/-AbHhQAAAAA.mp4"
+VIDEO_TIRAMISU = "https://video-preview.s3.yandex.net/9EuIQwIAAAA.mp4"
 VIDEO_LIMONAD  = None
 
 RECIPES = [
@@ -140,7 +140,7 @@ RECIPES = [
     {
         "title": "Лимонад",
         "description": "Освежающий домашний напиток с мятой.",
-        "image_url": "https://i.pinimg.com/1200x/6e/bd/a7/6ebda73fd484b2448dc940d0ccd4cb79.jpg",
+        "image_url": "https://i.pinimg.com/1200x/27/81/5b/27815bdd1ebf5c78378f48d3b2ba3bde.jpg",
         "category": "Напиток",
         "cooking_time": 10,
         "servings": 4,

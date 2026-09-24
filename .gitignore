@@ -36,4 +36,11 @@ Thumbs.db
 
 # Environment
 backend/.env
-.env
+.envbackend/test_cooking.db
+backend/htmlcov/
+backend/.coverage
+
+test_cooking.db
+backend/test_cooking.db
+backend/.coverage
+backend/htmlcov/

@@ -20,14 +20,19 @@ export default function RecipeDetailPage() {
   const [showStepForm, setShowStepForm] = useState(false);
   const [showIngForm, setShowIngForm] = useState(false);
 
-  const [stepForm, setStepForm] = useState({ title: '', description: '', duration: '', video_url: '' });
-  const [ingForm, setIngForm] = useState({ name: '', amount: '', unit: 'г', category: 'разное' });
+  const [stepForm, setStepForm] = useState({
+    title: '', description: '', duration: '', video_url: '',
+  });
+  const [ingForm, setIngForm] = useState({
+    name: '', amount: '', unit: 'г', category: 'разное',
+  });
 
   const [stepError, setStepError] = useState(null);
   const [ingError, setIngError] = useState(null);
   const [stepSaving, setStepSaving] = useState(false);
   const [ingSaving, setIngSaving] = useState(false);
 
+  // Загрузка данных
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -42,11 +47,16 @@ export default function RecipeDetailPage() {
         setIngredients(i);
       })
       .catch((e) => {
-        setError(e?.response?.status === 404 ? 'Рецепт не найден' : (e.message || 'Ошибка загрузки'));
+        setError(
+          e?.response?.status === 404
+            ? 'Рецепт не найден'
+            : e.message || 'Ошибка загрузки'
+        );
       })
       .finally(() => setLoading(false));
   }, [id]);
 
+  // Список всех ингредиентов для подсказок
   useEffect(() => {
     if (showIngForm) {
       ingredientsApi.listAll().then(setAllIngredients).catch(() => { });
@@ -55,15 +65,19 @@ export default function RecipeDetailPage() {
 
   const isOwner = user && recipe && recipe.author_id === user.id;
 
-  const handleStepChange = (e) => setStepForm({ ...stepForm, [e.target.name]: e.target.value });
+  // === Форма шага ===
+  const handleStepChange = (e) =>
+    setStepForm({ ...stepForm, [e.target.name]: e.target.value });
 
   const submitStep = async (e) => {
     e.preventDefault();
     setStepError(null);
+
     if (!stepForm.title.trim()) {
       setStepError('Введите название шага');
       return;
     }
+
     setStepSaving(true);
     try {
       const payload = {
@@ -85,18 +99,29 @@ export default function RecipeDetailPage() {
     }
   };
 
-  const handleIngChange = (e) => setIngForm({ ...ingForm, [e.target.name]: e.target.value });
+  // === Форма ингредиента ===
+  const handleIngChange = (e) =>
+    setIngForm({ ...ingForm, [e.target.name]: e.target.value });
 
   const submitIngredient = async (e) => {
     e.preventDefault();
     setIngError(null);
-    if (!ingForm.name.trim()) { setIngError('Введите название'); return; }
-    if (!ingForm.amount || Number(ingForm.amount) <= 0) { setIngError('Укажите количество'); return; }
+
+    if (!ingForm.name.trim()) {
+      setIngError('Введите название ингредиента');
+      return;
+    }
+    if (!ingForm.amount || Number(ingForm.amount) <= 0) {
+      setIngError('Укажите количество');
+      return;
+    }
 
     setIngSaving(true);
     try {
       const trimmedName = ingForm.name.trim();
-      const existing = allIngredients.find((i) => i.name.toLowerCase() === trimmedName.toLowerCase());
+      const existing = allIngredients.find(
+        (i) => i.name.toLowerCase() === trimmedName.toLowerCase()
+      );
 
       let ingredientId;
       if (existing) {
@@ -127,16 +152,22 @@ export default function RecipeDetailPage() {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Удалить рецепт?')) return;
+    if (!confirm('Удалить рецепт? Это действие нельзя отменить.')) return;
     try {
       await recipesApi.remove(id);
       navigate('/recipes');
     } catch {
-      alert('Не удалось удалить');
+      alert('Не удалось удалить рецепт');
     }
   };
 
-  if (loading) return <div className="page"><div className="state">Загрузка рецепта…</div></div>;
+  if (loading) {
+    return (
+      <div className="page">
+        <div className="state">Загрузка рецепта…</div>
+      </div>
+    );
+  }
 
   if (error) {
     return (
@@ -149,18 +180,25 @@ export default function RecipeDetailPage() {
     );
   }
 
+  // Находим первое видео среди шагов — для блока в шапке
+  const videoStep = steps.find((s) => s.video_url);
+
   return (
     <div className="page">
 
+      {/* Хлебные крошки */}
       <nav className="breadcrumb">
         <Link to="/recipes" className="breadcrumb__link">Рецепты</Link>
         <span className="breadcrumb__sep">/</span>
         <span className="breadcrumb__current">{recipe.title}</span>
       </nav>
 
+      {/* Шапка рецепта */}
       <header className="recipe-head">
         <div className="recipe-head__meta">
-          {recipe.category && <span className="recipe-head__cat">{recipe.category}</span>}
+          {recipe.category && (
+            <span className="recipe-head__cat">{recipe.category}</span>
+          )}
           {recipe.cooking_time && (
             <span className="meta-item">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width="14" height="14">
@@ -182,14 +220,19 @@ export default function RecipeDetailPage() {
         </div>
 
         <h1 className="recipe-head__title">{recipe.title}</h1>
-        {recipe.description && <p className="recipe-head__desc">{recipe.description}</p>}
 
-        {recipe.image_url && (
-          <div className="recipe-head__image">
-            <img src={recipe.image_url} alt={recipe.title} />
+        {recipe.description && (
+          <p className="recipe-head__desc">{recipe.description}</p>
+        )}
+
+
+        {videoStep && (
+          <div className="recipe-video">
+            <StepVideo url={videoStep.video_url} title={recipe.title} />
           </div>
         )}
 
+        {/* Кнопки автора */}
         {isOwner && (
           <div className="recipe-head__actions">
             <Link to={`/recipes/${id}/edit`} className="btn btn--outline">
@@ -200,18 +243,26 @@ export default function RecipeDetailPage() {
               Редактировать
             </Link>
             <button onClick={handleDelete} className="btn btn--outline">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+              </svg>
               Удалить
             </button>
           </div>
         )}
       </header>
 
+      {/* Двухколоночная раскладка */}
       <div className="recipe-body">
 
+        {/* Ингредиенты */}
         <aside className="recipe-sidebar">
           <div className="recipe-sidebar__head">
             <h2 className="recipe-sidebar__title">Ингредиенты</h2>
-            {ingredients.length > 0 && <span className="recipe-sidebar__count">{ingredients.length}</span>}
+            {ingredients.length > 0 && (
+              <span className="recipe-sidebar__count">{ingredients.length}</span>
+            )}
           </div>
 
           {ingredients.length === 0 && !showIngForm ? (
@@ -221,55 +272,117 @@ export default function RecipeDetailPage() {
               {ingredients.map((ing) => (
                 <li key={ing.id} className="ingredients__item">
                   <span className="ingredients__name">{ing.name}</span>
-                  <span className="ingredients__amount">{ing.amount} {ing.unit || ''}</span>
+                  <span className="ingredients__amount">
+                    {ing.amount} {ing.unit || ''}
+                  </span>
                 </li>
               ))}
             </ul>
           )}
 
+          {/* Форма ингредиента */}
           {isOwner && showIngForm && (
             <form onSubmit={submitIngredient} className="inline-form">
               {ingError && <div className="inline-form__error">{ingError}</div>}
+
               <div className="field">
                 <label className="field-label">Ингредиент</label>
-                <input type="text" name="name" value={ingForm.name} onChange={handleIngChange} list="ingredient-suggestions" placeholder="Начните вводить…" className="input" autoFocus />
+                <input
+                  type="text"
+                  name="name"
+                  value={ingForm.name}
+                  onChange={handleIngChange}
+                  list="ingredient-suggestions"
+                  placeholder="Начните вводить…"
+                  className="input"
+                  autoFocus
+                />
                 <datalist id="ingredient-suggestions">
-                  {allIngredients.map((i) => <option key={i.id} value={i.name} />)}
+                  {allIngredients.map((i) => (
+                    <option key={i.id} value={i.name} />
+                  ))}
                 </datalist>
+                <p className="field-hint">Выберите из списка или создайте новый</p>
               </div>
+
               <div className="inline-form__row">
                 <div className="field">
                   <label className="field-label">Кол-во</label>
-                  <input type="number" name="amount" value={ingForm.amount} onChange={handleIngChange} placeholder="200" min="0.1" step="any" className="input" />
+                  <input
+                    type="number"
+                    name="amount"
+                    value={ingForm.amount}
+                    onChange={handleIngChange}
+                    placeholder="200"
+                    min="0.1"
+                    step="any"
+                    className="input"
+                  />
                 </div>
                 <div className="field">
                   <label className="field-label">Ед.</label>
-                  <input type="text" name="unit" value={ingForm.unit} onChange={handleIngChange} placeholder="г" maxLength={10} className="input" />
+                  <input
+                    type="text"
+                    name="unit"
+                    value={ingForm.unit}
+                    onChange={handleIngChange}
+                    placeholder="г"
+                    maxLength={10}
+                    className="input"
+                  />
                 </div>
               </div>
+
               <div className="inline-form__actions">
-                <button type="button" onClick={() => { setShowIngForm(false); setIngError(null); }} className="btn btn--outline btn--sm">Отмена</button>
-                <button type="submit" disabled={ingSaving} className="btn btn--red btn--sm">{ingSaving ? '…' : 'Добавить'}</button>
+                <button
+                  type="button"
+                  onClick={() => { setShowIngForm(false); setIngError(null); }}
+                  className="btn btn--outline btn--sm"
+                >
+                  Отмена
+                </button>
+                <button type="submit" disabled={ingSaving} className="btn btn--red btn--sm">
+                  {ingSaving ? '…' : 'Добавить'}
+                </button>
               </div>
             </form>
           )}
 
           {isOwner && !showIngForm && (
-            <button onClick={() => setShowIngForm(true)} className="btn btn--outline btn--full" style={{ marginTop: ingredients.length ? 16 : 0 }}>
-              + Добавить ингредиент
+            <button
+              onClick={() => setShowIngForm(true)}
+              className="btn btn--outline btn--full"
+              style={{ marginTop: ingredients.length ? 16 : 0 }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" width="14" height="14">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Добавить ингредиент
             </button>
           )}
 
-          <Link to="/shopping-list" className="btn btn--red btn--full" style={{ marginTop: 16 }}>
+          <Link
+            to="/shopping-list"
+            className="btn btn--red btn--full"
+            style={{ marginTop: 16 }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
             В список покупок
           </Link>
         </aside>
 
+        {/* Шаги */}
         <main className="recipe-main">
           <div className="recipe-main__head">
             <h2 className="recipe-main__title">
               Приготовление
-              {steps.length > 0 && <span className="recipe-main__count">{steps.length} шагов</span>}
+              {steps.length > 0 && (
+                <span className="recipe-main__count">{steps.length} шагов</span>
+              )}
             </h2>
           </div>
 
@@ -281,48 +394,104 @@ export default function RecipeDetailPage() {
             <ol className="steps">
               {steps.map((step, index) => (
                 <li key={step.id} className="step">
-                  <div className="step__num">{String(index + 1).padStart(2, '0')}</div>
+                  <div className="step__num">
+                    {String(index + 1).padStart(2, '0')}
+                  </div>
                   <div className="step__body">
-                    {step.title && <h3 className="step__title">{step.title}</h3>}
-                    {step.description && <p className="step__text">{step.description}</p>}
-                    {step.video_url && <StepVideo url={step.video_url} title={step.title} />}
+                    {step.title && (
+                      <h3 className="step__title">{step.title}</h3>
+                    )}
+                    {step.description && (
+                      <p className="step__text">{step.description}</p>
+                    )}
+                    {/* Видео у шагов убрано — оно теперь одно, в шапке рецепта */}
                   </div>
                 </li>
               ))}
             </ol>
           )}
 
+          {/* Форма шага */}
           {isOwner && showStepForm && (
             <form onSubmit={submitStep} className="inline-form" style={{ marginTop: 24 }}>
               {stepError && <div className="inline-form__error">{stepError}</div>}
+
               <div className="field">
                 <label className="field-label">Название шага</label>
-                <input type="text" name="title" value={stepForm.title} onChange={handleStepChange} placeholder="Нарезать лук" className="input" autoFocus />
+                <input
+                  type="text"
+                  name="title"
+                  value={stepForm.title}
+                  onChange={handleStepChange}
+                  placeholder="Например, Нарезать лук"
+                  className="input"
+                  autoFocus
+                />
               </div>
+
               <div className="field">
                 <label className="field-label">Описание</label>
-                <textarea name="description" value={stepForm.description} onChange={handleStepChange} placeholder="Что делать" className="input textarea" rows={3} />
+                <textarea
+                  name="description"
+                  value={stepForm.description}
+                  onChange={handleStepChange}
+                  placeholder="Что делать на этом шаге"
+                  className="input textarea"
+                  rows={3}
+                />
               </div>
+
               <div className="inline-form__row">
                 <div className="field">
                   <label className="field-label">Длительность, сек</label>
-                  <input type="number" name="duration" value={stepForm.duration} onChange={handleStepChange} placeholder="120" min="1" className="input" />
+                  <input
+                    type="number"
+                    name="duration"
+                    value={stepForm.duration}
+                    onChange={handleStepChange}
+                    placeholder="120"
+                    min="1"
+                    className="input"
+                  />
                 </div>
                 <div className="field">
                   <label className="field-label">Видео URL</label>
-                  <input type="url" name="video_url" value={stepForm.video_url} onChange={handleStepChange} placeholder="https://…" className="input" />
+                  <input
+                    type="url"
+                    name="video_url"
+                    value={stepForm.video_url}
+                    onChange={handleStepChange}
+                    placeholder="https://…mp4 или YouTube"
+                    className="input"
+                  />
                 </div>
               </div>
+
               <div className="inline-form__actions">
-                <button type="button" onClick={() => { setShowStepForm(false); setStepError(null); }} className="btn btn--outline btn--sm">Отмена</button>
-                <button type="submit" disabled={stepSaving} className="btn btn--red btn--sm">{stepSaving ? '…' : 'Добавить шаг'}</button>
+                <button
+                  type="button"
+                  onClick={() => { setShowStepForm(false); setStepError(null); }}
+                  className="btn btn--outline btn--sm"
+                >
+                  Отмена
+                </button>
+                <button type="submit" disabled={stepSaving} className="btn btn--red btn--sm">
+                  {stepSaving ? '…' : 'Добавить шаг'}
+                </button>
               </div>
             </form>
           )}
 
           {isOwner && !showStepForm && (
-            <button onClick={() => setShowStepForm(true)} className="btn btn--outline btn--full" style={{ marginTop: 24 }}>
-              + Добавить шаг
+            <button
+              onClick={() => setShowStepForm(true)}
+              className="btn btn--outline btn--full"
+              style={{ marginTop: 24 }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" width="14" height="14">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Добавить шаг
             </button>
           )}
         </main>
