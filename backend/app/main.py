@@ -68,4 +68,4 @@ def debug_tables():
     return {
         "tables": inspector.get_table_names(),
         "database_url": str(engine.url),
-    }
+    } 
